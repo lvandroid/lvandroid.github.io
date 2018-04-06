@@ -79,21 +79,21 @@
 
 
 
-<meta name="description" content="Android Studio的git插件使用起来非常方便，而对于新手也带来很多困惑，现在记录下本人开发过程中曾经犯二的过程，给新人提供参考，大神绕道。 公司的项目主要是我一个人在写，另外还要个同事因为java基础薄弱，主要负责界面布局，刚开始项目只有develop和master分支，我们都是用develop分支进行开发。由于经常遇到代码提交冲突问题，我决定给我们每人创建一个分支，在自己分支上进行开">
+<meta name="description" content="因为有未解决的冲突commit失败当提交本地出现没解决冲突时会提示提交失败，VCS-&amp;gt;Git-&amp;gt;Resolve Conflicts  因为有冲突merge分支失败隐藏本地的修改 合并分支  显示本地的修改  显示本地修改之后，就可以解决文件的冲突内容了">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Studio使用git无法pull或commit的解决方法">
+<meta property="og:title" content="Android Studio使用git无法pull或commit的解决方法">
 <meta property="og:url" content="http://yoursite.com/2016/07/14/Studio使用git无法pull或commit的解决方法/index.html">
 <meta property="og:site_name" content="冰色太阳的博客">
-<meta property="og:description" content="Android Studio的git插件使用起来非常方便，而对于新手也带来很多困惑，现在记录下本人开发过程中曾经犯二的过程，给新人提供参考，大神绕道。 公司的项目主要是我一个人在写，另外还要个同事因为java基础薄弱，主要负责界面布局，刚开始项目只有develop和master分支，我们都是用develop分支进行开发。由于经常遇到代码提交冲突问题，我决定给我们每人创建一个分支，在自己分支上进行开">
+<meta property="og:description" content="因为有未解决的冲突commit失败当提交本地出现没解决冲突时会提示提交失败，VCS-&amp;gt;Git-&amp;gt;Resolve Conflicts  因为有冲突merge分支失败隐藏本地的修改 合并分支  显示本地的修改  显示本地修改之后，就可以解决文件的冲突内容了">
 <meta property="og:locale" content="zh-Hans">
 <meta property="og:image" content="http://img.blog.csdn.net/20160714114410255">
 <meta property="og:image" content="http://img.blog.csdn.net/20160714114926101">
 <meta property="og:image" content="http://img.blog.csdn.net/20160714114908308">
 <meta property="og:image" content="http://img.blog.csdn.net/20160714114908308">
-<meta property="og:updated_time" content="2018-04-06T04:45:14.207Z">
+<meta property="og:updated_time" content="2018-04-06T05:00:46.004Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Studio使用git无法pull或commit的解决方法">
-<meta name="twitter:description" content="Android Studio的git插件使用起来非常方便，而对于新手也带来很多困惑，现在记录下本人开发过程中曾经犯二的过程，给新人提供参考，大神绕道。 公司的项目主要是我一个人在写，另外还要个同事因为java基础薄弱，主要负责界面布局，刚开始项目只有develop和master分支，我们都是用develop分支进行开发。由于经常遇到代码提交冲突问题，我决定给我们每人创建一个分支，在自己分支上进行开">
+<meta name="twitter:title" content="Android Studio使用git无法pull或commit的解决方法">
+<meta name="twitter:description" content="因为有未解决的冲突commit失败当提交本地出现没解决冲突时会提示提交失败，VCS-&amp;gt;Git-&amp;gt;Resolve Conflicts  因为有冲突merge分支失败隐藏本地的修改 合并分支  显示本地的修改  显示本地修改之后，就可以解决文件的冲突内容了">
 <meta name="twitter:image" content="http://img.blog.csdn.net/20160714114410255">
 
 
@@ -130,7 +130,7 @@
 
 
 
-  <title>Studio使用git无法pull或commit的解决方法 | 冰色太阳的博客</title>
+  <title>Android Studio使用git无法pull或commit的解决方法 | 冰色太阳的博客</title>
   
 
 
@@ -284,7 +284,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">Studio使用git无法pull或commit的解决方法</h1>
+          <h1 class="post-title" itemprop="name headline">Android Studio使用git无法pull或commit的解决方法</h1>
         
 
         <div class="post-meta">
@@ -334,9 +334,7 @@
       
 
       
-        <p>Android Studio的git插件使用起来非常方便，而对于新手也带来很多困惑，现在记录下本人开发过程中曾经犯二的过程，给新人提供参考，大神绕道。</p>
-<p>公司的项目主要是我一个人在写，另外还要个同事因为java基础薄弱，主要负责界面布局，刚开始项目只有develop和master分支，我们都是用develop分支进行开发。由于经常遇到代码提交冲突问题，我决定给我们每人创建一个分支，在自己分支上进行开发提交，愿望是美好的，结果是残酷的，因为偶尔的顺手修改了和对方冲突的文件，导致合并总是失败，但是android studio没有界面修改这种合并分支的冲突，被这个问题折磨的很恼火。现在就以上问题提供解决方案，其实很简单，只是因为对git插件的一些功能视而不见。</p>
-<h2 id="因为有未解决的冲突commit失败"><a href="#因为有未解决的冲突commit失败" class="headerlink" title="因为有未解决的冲突commit失败"></a><strong>因为有未解决的冲突commit失败</strong></h2><p><strong>当提交本地出现没解决冲突时会提示提交失败，VCS-&gt;Git-&gt;Resolve Conflicts</strong></p>
+        <h2 id="因为有未解决的冲突commit失败"><a href="#因为有未解决的冲突commit失败" class="headerlink" title="因为有未解决的冲突commit失败"></a><strong>因为有未解决的冲突commit失败</strong></h2><p><strong>当提交本地出现没解决冲突时会提示提交失败，VCS-&gt;Git-&gt;Resolve Conflicts</strong></p>
 <p><img src="http://img.blog.csdn.net/20160714114410255" alt=""></p>
 <h2 id="因为有冲突merge分支失败"><a href="#因为有冲突merge分支失败" class="headerlink" title="因为有冲突merge分支失败"></a><strong>因为有冲突merge分支失败</strong></h2><p>隐藏本地的修改<br><img src="http://img.blog.csdn.net/20160714114926101" alt=""></p>
 <p><strong>合并分支</strong></p>
