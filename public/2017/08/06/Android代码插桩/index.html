@@ -1,0 +1,1008 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Hexo, NexT" />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="定个小目标为了采集android网络性能数据，最简单直接的方式是我们可以在每个网络请求方法中打印相关数据日志上传。然而在生产环境中明显不可行，我们需要实现非侵入的，全量的数据采集，那么AOP成了关键。下面以网络性能数据收集SDK开发为例说明怎样一步步实现Android上的AOP。 聊聊AOP生活中AOP的影子“什么时候出发？”   “明天” “累了就回家” 这句“累了就回家”就是生活中的AOP，临">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Android代码插桩">
+<meta property="og:url" content="http://yoursite.com/2017/08/06/Android代码插桩/index.html">
+<meta property="og:site_name" content="冰色太阳的博客">
+<meta property="og:description" content="定个小目标为了采集android网络性能数据，最简单直接的方式是我们可以在每个网络请求方法中打印相关数据日志上传。然而在生产环境中明显不可行，我们需要实现非侵入的，全量的数据采集，那么AOP成了关键。下面以网络性能数据收集SDK开发为例说明怎样一步步实现Android上的AOP。 聊聊AOP生活中AOP的影子“什么时候出发？”   “明天” “累了就回家” 这句“累了就回家”就是生活中的AOP，临">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="https://ws2.sinaimg.cn/large/006tKfTcgy1fj8huamog8j30ew0oiac0.jpg">
+<meta property="og:updated_time" content="2018-04-06T05:29:06.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Android代码插桩">
+<meta name="twitter:description" content="定个小目标为了采集android网络性能数据，最简单直接的方式是我们可以在每个网络请求方法中打印相关数据日志上传。然而在生产环境中明显不可行，我们需要实现非侵入的，全量的数据采集，那么AOP成了关键。下面以网络性能数据收集SDK开发为例说明怎样一步步实现Android上的AOP。 聊聊AOP生活中AOP的影子“什么时候出发？”   “明天” “累了就回家” 这句“累了就回家”就是生活中的AOP，临">
+<meta name="twitter:image" content="https://ws2.sinaimg.cn/large/006tKfTcgy1fj8huamog8j30ew0oiac0.jpg">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"搜索主题","hits_empty":"搜寻不到: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2017/08/06/Android代码插桩/"/>
+
+
+
+
+
+  <title>Android代码插桩 | 冰色太阳的博客</title>
+  
+
+
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?5f417e8572891cfdbc89ed5b7d636554";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">冰色太阳的博客</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
+            
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  
+  <div class="algolia-popup popup search-popup">
+    <div class="algolia-search">
+      <div class="algolia-search-input-icon">
+        <i class="fa fa-search"></i>
+      </div>
+      <div class="algolia-search-input" id="algolia-search-input"></div>
+    </div>
+
+    <div class="algolia-results">
+      <div id="algolia-stats"></div>
+      <div id="algolia-hits"></div>
+      <div id="algolia-pagination" class="algolia-pagination"></div>
+    </div>
+
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+  </div>
+
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/08/06/Android代码插桩/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="lvandroid">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/tx.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="冰色太阳的博客">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Android代码插桩</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-08-06T00:00:00+08:00">
+                2017-08-06
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2017/08/06/Android代码插桩/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count valine-comment-count" data-xid="/2017/08/06/Android代码插桩/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="定个小目标"><a href="#定个小目标" class="headerlink" title="定个小目标"></a>定个小目标</h2><p>为了采集android网络性能数据，最简单直接的方式是我们可以在每个网络请求方法中打印相关数据日志上传。然而在生产环境中明显不可行，我们需要实现非侵入的，全量的数据采集，那么AOP成了关键。下面以网络性能数据收集SDK开发为例说明怎样一步步实现Android上的AOP。</p>
+<h2 id="聊聊AOP"><a href="#聊聊AOP" class="headerlink" title="聊聊AOP"></a>聊聊AOP</h2><h3 id="生活中AOP的影子"><a href="#生活中AOP的影子" class="headerlink" title="生活中AOP的影子"></a>生活中AOP的影子</h3><p>“什么时候出发？”  </p>
+<p>“明天”</p>
+<p>“累了就回家”</p>
+<p>这句“累了就回家”就是生活中的AOP，临行前的叮嘱，期间的问候，回家后的温暖，这是AOP做的事,和出门要做的事并没有什么关系。</p>
+<h3 id="Android-AOP方式"><a href="#Android-AOP方式" class="headerlink" title="Android AOP方式"></a>Android AOP方式</h3><p>AOP实现原理上可以分为运行时AOP和编译时AOP：</p>
+<p><strong>运行时AOP：</strong>hook某些关键方法,主流框架有Dexposed,Xposed等</p>
+<p><strong>编译时AOP：</strong>apk打包过程中对class文件的字节码进行扫描更改,主流框架aspactJ,ASM。</p>
+<p><strong><em>不同工具库优劣势对比</em></strong></p>
+<table>
+<thead>
+<tr>
+<th>工具库</th>
+<th>方式</th>
+<th>能力</th>
+<th>缺点</th>
+<th>学习曲线</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>XPosed</td>
+<td>运行时hook</td>
+<td>1. 能hook自己应用进程的方法；<br> 2. 能hook别的应用的方法；<br> 3. 能hook系统方法；</td>
+<td>1. 手机需要root;<br>2. 依赖三方包的支持，碎片化严重兼容性差；</td>
+<td>一般</td>
+</tr>
+<tr>
+<td>DexPosed</td>
+<td>运行时hook</td>
+<td>能hook自己应用进程的方法；</td>
+<td>1. 目前不支持4.4以及5.1以上的系统；<br> 2. 依赖三方包的支持，碎片化严重兼容性差；</td>
+<td>一般</td>
+</tr>
+<tr>
+<td>AspectJ</td>
+<td>编译时字节码注入</td>
+<td>可以在编译成字节码的过程中插入代码；</td>
+<td>官方有Eclipse插件，但没有Android Studio插件，需要替换编译器，环境不好部署；</td>
+<td>一般</td>
+</tr>
+<tr>
+<td>ASM</td>
+<td>编译时或者运行期字节码注入</td>
+<td>可以在字节码中文件或者ClassLoader加载字节码的时候插入代码；</td>
+<td>需要熟悉字节码语法；</td>
+<td>陡峭</td>
+</tr>
+</tbody>
+</table>
+<p><strong><em>我们采用的AOP方式：</em></strong></p>
+<p>SDK的难点是数据的采集，手动埋点的方式无疑是行不通的，一方面代价太大且容易产生错误，另一方面对于没有源代码的第三方库我们无法直接修改，因而不能满足我们的需求。我们选择在应用构建期间通过修改字节码的方式来进行代码插桩。</p>
+<p>应用构建过程：</p>
+<p><img src="https://ws2.sinaimg.cn/large/006tKfTcgy1fj8huamog8j30ew0oiac0.jpg" alt="打包流程"></p>
+<p>应用中所有的class文件包括引用的第三方库中的class，都会经由dex过程，被转化为一个或者多个dex文件，正因为所有的class文件都会在dex这一步被处理，所以我们选择在这里进行字节码插桩。hook Android编译打包流程并借助ASM库对项目字节码文件进行统一扫描，过滤以及修改。</p>
+<h2 id="说点细节"><a href="#说点细节" class="headerlink" title="说点细节"></a>说点细节</h2><h3 id="一个简单的demo"><a href="#一个简单的demo" class="headerlink" title="一个简单的demo"></a>一个简单的demo</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">URL mURL = <span class="keyword">new</span> URL(url);</span><br><span class="line">HttpURLConnection conn = (HttpURLConnection) mURL.openConnection();</span><br></pre></td></tr></table></figure>
+<p>如果我们想对openConnection()这个方法动点手脚，比如在执行方法开始时打印系统时间，但不能影响其他逻辑。那么我们可以新建一个代理类Monitor:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Monitor</span></span>&#123;</span><br><span class="line">	<span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> String TAG=<span class="string">"Monitor"</span>;</span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">static</span> HttpURLConnection <span class="title">hookOpenConnection</span><span class="params">(URL url)</span></span>&#123;</span><br><span class="line">		Log.d(TAG,System.currentTimeMillis());</span><br><span class="line">		<span class="comment">//原方法逻辑不能修改</span></span><br><span class="line">		<span class="keyword">return</span> (HttpURLConnection)url.openConnection();</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>如果编译修改后的方法变成这样</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">URL mURL = <span class="keyword">new</span> URL(url);</span><br><span class="line">HttpURLConnection conn = Monitor.hookOpenConnection(url);</span><br></pre></td></tr></table></figure>
+<p>那么目的就达到了，如何去替换成我们的代理类呢，不得不说我们的主角ASM和gradle了。</p>
+<blockquote>
+<p><strong><em>我们要做的：</em></strong></p>
+<ol>
+<li><p>gradle插件</p>
+</li>
+<li><p>ASM修改字节码</p>
+</li>
+<li><p>业务代码</p>
+</li>
+</ol>
+</blockquote>
+<h3 id="插桩入口-transform-api"><a href="#插桩入口-transform-api" class="headerlink" title="插桩入口 transform api"></a>插桩入口 transform api</h3><p>Android Gradle Plugin 1.5.0后提供了transform api用作字节码插桩的入口。细节可查看<a href="http://tools.android.com/tech-docs/new-build-system/transform-api" target="_blank" rel="noopener">官方API</a>。</p>
+<p>对于1.5.0版本一下的情况，可hook dex.jar实现，具体实现可参考博客<a href="http://blog.csdn.net/sgwhp/article/details/50239747" target="_blank" rel="noopener">APM之原理篇</a>。</p>
+<h3 id="字节码操作工具ASM"><a href="#字节码操作工具ASM" class="headerlink" title="字节码操作工具ASM"></a>字节码操作工具ASM</h3><p>ASM是一个java字节码操纵框架，它能被用来动态生成类或者增强既有类的功能。ASM 可以直接产生二进制 class 文件，也可以在类被加载入 Java 虚拟机之前动态改变类行为。类似功能的工具库还有javassist，BCEL等。</p>
+<p>使用不同工具库生成同一个类的耗时：</p>
+<table>
+<thead>
+<tr>
+<th>Framework</th>
+<th style="text-align:center">First time</th>
+<th style="text-align:center">Later times</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Javassist</td>
+<td style="text-align:center">257</td>
+<td style="text-align:center">5.2</td>
+</tr>
+<tr>
+<td>BCEL</td>
+<td style="text-align:center">473</td>
+<td style="text-align:center">5.5</td>
+</tr>
+<tr>
+<td>ASM</td>
+<td style="text-align:center">62.4</td>
+<td style="text-align:center">1.1</td>
+</tr>
+</tbody>
+</table>
+<p>因为灵活强大高效，所以选择ASM作为字节码操作工具。</p>
+<h4 id="ASM-API简介"><a href="#ASM-API简介" class="headerlink" title="ASM API简介"></a>ASM API简介</h4><p>ASM（core api） 按照visitor模式按照class文件结构依次访问class文件的每一部分，有如下几个重要的visitor。</p>
+<h6 id="ClassVisitor"><a href="#ClassVisitor" class="headerlink" title="ClassVisitor"></a>ClassVisitor</h6><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">abstract</span> <span class="class"><span class="keyword">class</span> <span class="title">ClassVisitor</span></span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">ClassVisitor</span><span class="params">(<span class="keyword">int</span> api)</span></span>;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">ClassVisitor</span><span class="params">(<span class="keyword">int</span> api, ClassVisitor cv)</span></span>;</span><br><span class="line">    <span class="comment">//访问类名，父类名，实现的接口（数组）等信息</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">visit</span><span class="params">(<span class="keyword">int</span> version, <span class="keyword">int</span> access, String name,String signature, String superName, String[] interface)</span></span>;</span><br><span class="line">    <span class="comment">//访问内部类</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">visitInnerClass</span><span class="params">(String name, String outerName, String innerName, <span class="keyword">int</span> access)</span></span>;</span><br><span class="line">    <span class="comment">//访问字段</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> FieldVisitor <span class="title">visitField</span><span class="params">(<span class="keyword">int</span> access , String name, String desc, String signature, Object value)</span></span>;</span><br><span class="line">    <span class="comment">//访问方法</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> MethodVisitor <span class="title">visitMethod</span><span class="params">(<span class="keyword">int</span> access, String name ,String desc, String signature, String[] Exceptions)</span></span>;</span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">visitEnd</span><span class="params">()</span></span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h6 id="MethodVisitor"><a href="#MethodVisitor" class="headerlink" title="MethodVisitor"></a>MethodVisitor</h6><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">abstract</span> <span class="class"><span class="keyword">class</span> <span class="title">MethodVisitor</span></span>&#123;</span><br><span class="line">    <span class="comment">//开始访问方法体内的代码</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">visitCode</span><span class="params">()</span></span>;</span><br><span class="line">    <span class="comment">//访问方法的try catch block</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">visitTryCatchBlock</span><span class="params">(Label start, Label end, Label handler, String type)</span></span>;</span><br><span class="line">    <span class="comment">//指令，访问局部变量表里面的某个局部变量</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">visitLocalVariable</span><span class="params">(String name, String desc, String signature, Label start, Label end, <span class="keyword">int</span> index)</span></span>;</span><br><span class="line">    <span class="comment">//指令，表示class方法体里面的字节码指令(如 IADD， ICONST_0, ARETRURN等字节码指令)</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">visitXxxInsn</span><span class="params">()</span></span>;</span><br><span class="line">    <span class="comment">//如果方法体中有跳转指令，字节码指令中会出现label，所谓label可以近似看成行号的标记，指示跳转到的位置</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">visitLabel</span><span class="params">(Label label)</span></span>;</span><br><span class="line">    <span class="comment">//记录当前栈帧状态，用于class文件加载时的校验</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">visitFrame</span><span class="params">(<span class="keyword">int</span> type, <span class="keyword">int</span> nLocal, Object[] local, <span class="keyword">int</span> nStack, Object[] stack)</span></span>;</span><br><span class="line">    <span class="comment">//指定当前方法的栈帧中，局部变量表和操作数栈的大小（java栈大小是javac之后就确定的）</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">visitMaxs</span><span class="params">(<span class="keyword">int</span> maxStack, <span class="keyword">int</span> maxLocals)</span></span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="字节码基础"><a href="#字节码基础" class="headerlink" title="字节码基础"></a>字节码基础</h4><h5 id="java类型描述符"><a href="#java类型描述符" class="headerlink" title="java类型描述符"></a>java类型描述符</h5><table>
+<thead>
+<tr>
+<th>Java type</th>
+<th>Type descriptor</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>boolean</td>
+<td>Z</td>
+</tr>
+<tr>
+<td>char</td>
+<td>C</td>
+</tr>
+<tr>
+<td>byte</td>
+<td>B</td>
+</tr>
+<tr>
+<td>short</td>
+<td>S</td>
+</tr>
+<tr>
+<td>int</td>
+<td>I</td>
+</tr>
+<tr>
+<td>float</td>
+<td>F</td>
+</tr>
+<tr>
+<td>long</td>
+<td>J</td>
+</tr>
+<tr>
+<td>double</td>
+<td>D</td>
+</tr>
+<tr>
+<td>Object</td>
+<td>Ljava/lang/Object;</td>
+</tr>
+<tr>
+<td>int[]</td>
+<td>[I</td>
+</tr>
+<tr>
+<td>Object[][]</td>
+<td>[[Ljava/lang/Object;</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p><strong>自定义引用类的表示: “L全限定名;”</strong></p>
+<p>如  android.app.Activity 描述符为 “Landroid/app/Activity;”</p>
+</blockquote>
+<p> <strong>方法描述符的表示法：</strong></p>
+<p>(参数类型描述符)返回值描述符</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">getId</span><span class="params">(Object o)</span></span>;</span><br><span class="line"><span class="comment">//描述符为</span></span><br><span class="line">(Ljava/lang/Object;)I</span><br></pre></td></tr></table></figure>
+<h5 id="局部变量表"><a href="#局部变量表" class="headerlink" title="局部变量表"></a>局部变量表</h5><p>顾名思义，存储当前方法中的局部变量，包括方法的入参，第一个是存放的是this</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> MethodVisitor <span class="title">visitMethod</span><span class="params">(<span class="keyword">int</span> access, String name ,String desc, String signature, String[] Exceptions)</span></span>;</span><br></pre></td></tr></table></figure>
+<p>刚进入此方法时，局部变量表的槽位状态</p>
+<table>
+<thead>
+<tr>
+<th>Slot Number</th>
+<th>value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0</td>
+<td>this</td>
+</tr>
+<tr>
+<td>1</td>
+<td>int access</td>
+</tr>
+<tr>
+<td>2</td>
+<td>String name</td>
+</tr>
+<tr>
+<td>3</td>
+<td>String desc</td>
+</tr>
+<tr>
+<td>4</td>
+<td>String signature</td>
+</tr>
+<tr>
+<td>5</td>
+<td>String[] Exceptions</td>
+</tr>
+</tbody>
+</table>
+<h4 id="实践一下"><a href="#实践一下" class="headerlink" title="实践一下"></a>实践一下</h4><p>了解了ASM基础知识，下面来实现我们的demo</p>
+<h5 id="先实现我们的gradle插件"><a href="#先实现我们的gradle插件" class="headerlink" title="先实现我们的gradle插件"></a>先实现我们的gradle插件</h5><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">PluginImpl</span> <span class="keyword">implements</span> <span class="title">Plugin</span>&lt;<span class="title">Project</span>&gt;</span>&#123;</span><br><span class="line">  <span class="meta">@Override</span></span><br><span class="line">  <span class="function"><span class="keyword">void</span> <span class="title">apply</span> <span class="params">(Project project)</span></span>&#123;</span><br><span class="line">    ...</span><br><span class="line">    <span class="comment">// 调用自定义后的transform</span></span><br><span class="line">    android.registerTransform(<span class="keyword">new</span> InjectTransform());</span><br><span class="line">    ...</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">InjectTransform</span> <span class="keyword">extends</span> <span class="title">Transform</span></span>&#123;</span><br><span class="line">  <span class="meta">@Override</span></span><br><span class="line">  <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">transform</span><span class="params">((TransformInvocation transformInvocation)</span></span></span><br><span class="line"><span class="function">            <span class="keyword">throws</span> TransformException, InterruptedException, IOException  </span>&#123;</span><br><span class="line">              ...</span><br><span class="line">              <span class="comment">//修改字节码</span></span><br><span class="line">              transform(file);</span><br><span class="line">              ...</span><br><span class="line">  &#125;  </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>可见gradle插件只是个工具，提供了接口，真正做工作的还是字节码操作。</p>
+<h5 id="ASM如何操作字节码"><a href="#ASM如何操作字节码" class="headerlink" title="ASM如何操作字节码"></a>ASM如何操作字节码</h5><p>asm操作字节码的简单思路为(以修改方为例)：根据方法名、方法参数和返回值等定位位置，并替换成新的方法。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">transfrom</span><span class="params">(File file)</span></span>&#123;</span><br><span class="line">    ...</span><br><span class="line">        ClassReader classReader = <span class="keyword">new</span> ClassReader(<span class="keyword">new</span> FileInputStream(file));</span><br><span class="line">        ClassWriter classWriter = <span class="keyword">new</span> ClassWriter(classReader, ClassWriter.COMPUTE_MAXS);</span><br><span class="line"></span><br><span class="line">        MonitorClassVisitor monitorClassVisitor = <span class="keyword">new</span> MonitorClassVisitor(Opcodes.ASM5, classWriter);</span><br><span class="line"></span><br><span class="line">        classReader.accept(monitorClassVisitor, ClassReader.EXPAND_FRAMES);</span><br><span class="line">        FileOutputStream fileOutputStream = <span class="keyword">new</span> FileOutputStream(file);</span><br><span class="line">        fileOutputStream.write(classWriter.toByteArray());</span><br><span class="line">    ...</span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//操作字节码的具体实现类</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">MonitorClassVisitor</span> <span class="keyword">extends</span> <span class="title">ClassVisitor</span></span>&#123;</span><br><span class="line">      <span class="meta">@Override</span></span><br><span class="line">      <span class="function">MethodVisitor <span class="title">visitMethod</span><span class="params">(<span class="keyword">int</span> access, String name, String desc, String signature, String[] exceptions)</span> </span>&#123;</span><br><span class="line">        MethodVisitor methodVisitor;</span><br><span class="line">        methodVisitor = <span class="keyword">super</span>.visitMethod(access, name, desc, signature, exceptions);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> MonitorMethodVisitor(Opcodes.ASM5, methodVisitor, access, name, desc);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//修改替换方法的实现类</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">MonitorMethodVisitor</span> <span class="keyword">extends</span> <span class="title">AdviceAdapter</span></span>&#123;</span><br><span class="line">    <span class="meta">@Overrid</span></span><br><span class="line">   <span class="function"><span class="keyword">void</span> <span class="title">visitMethodInsn</span><span class="params">(<span class="keyword">int</span> opcode, String owner, String name, String desc, <span class="keyword">boolean</span> itf)</span> </span>&#123;</span><br><span class="line">     <span class="comment">//将满足判断条件的方法修改成要替换的方法</span></span><br><span class="line">        <span class="keyword">if</span> (<span class="string">"openConnection"</span>.equals(name) &amp;&amp; <span class="string">"()Ljava/net/URLConnection;"</span>.equals(desc)&amp;&amp;</span><br><span class="line">        <span class="string">"java/net/HttpURLConnection"</span>.equals(owner)) &#123;</span><br><span class="line">            mv.visitMethodInsn(INVOKESTATIC, <span class="string">"com/monitor/Monitor"</span>, <span class="string">"hookOpenConnection"</span>,</span><br><span class="line">            <span class="string">"(Ljava/net/URL;)Ljava/net/HttpURLConnection;"</span>, <span class="keyword">false</span>)</span><br><span class="line">        &#125;<span class="keyword">else</span>&#123;</span><br><span class="line">            <span class="keyword">super</span>.visitMethodInsn(opcode, owner, name, desc, itf);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>编译查看.class文件，已经变成了<code>HttpURLConnectionconn=Monitor.hookOpenConnection(url);</code> 成功替换了方法调用。</p>
+<h2 id="总结一下"><a href="#总结一下" class="headerlink" title="总结一下"></a>总结一下</h2><h4 id="做了什么？"><a href="#做了什么？" class="headerlink" title="做了什么？"></a>做了什么？</h4><p>不知道方法在做什么，但是缺了点什么，想要加点内容进去还能神不知鬼不觉，该怎么办？</p>
+<h4 id="怎么做的？"><a href="#怎么做的？" class="headerlink" title="怎么做的？"></a>怎么做的？</h4><p>先让gradle找到这个方法，再让ASM去和字节码交流，达成共识，替换成我们的方法，当然不忘初衷的事就需要考验ASM的真诚了，如果修改了原方法的逻辑，说不定下一个方法就会发现找不到上一个方法的返回值。所以，多点真诚，少点bug。</p>
+<h4 id="不足之处？"><a href="#不足之处？" class="headerlink" title="不足之处？"></a>不足之处？</h4><p>需要对ASM熟悉，分析需要hook的源码，适配不同框架，甚至对同一个框架不同版本也需要适配，比如okhttp2 和okhttp3。</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/06/02/浏览器启动app/" rel="next" title="浏览器启动app">
+                <i class="fa fa-chevron-left"></i> 浏览器启动app
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+    <div class="comments" id="comments">
+    </div>
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="/images/tx.png"
+                alt="lvandroid" />
+            
+              <p class="site-author-name" itemprop="name">lvandroid</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">10</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#定个小目标"><span class="nav-number">1.</span> <span class="nav-text">定个小目标</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#聊聊AOP"><span class="nav-number">2.</span> <span class="nav-text">聊聊AOP</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#生活中AOP的影子"><span class="nav-number">2.1.</span> <span class="nav-text">生活中AOP的影子</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Android-AOP方式"><span class="nav-number">2.2.</span> <span class="nav-text">Android AOP方式</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#说点细节"><span class="nav-number">3.</span> <span class="nav-text">说点细节</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#一个简单的demo"><span class="nav-number">3.1.</span> <span class="nav-text">一个简单的demo</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#插桩入口-transform-api"><span class="nav-number">3.2.</span> <span class="nav-text">插桩入口 transform api</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#字节码操作工具ASM"><span class="nav-number">3.3.</span> <span class="nav-text">字节码操作工具ASM</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#ASM-API简介"><span class="nav-number">3.3.1.</span> <span class="nav-text">ASM API简介</span></a><ol class="nav-child"><li class="nav-item nav-level-6"><a class="nav-link" href="#ClassVisitor"><span class="nav-number">3.3.1.0.1.</span> <span class="nav-text">ClassVisitor</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#MethodVisitor"><span class="nav-number">3.3.1.0.2.</span> <span class="nav-text">MethodVisitor</span></a></li></ol></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#字节码基础"><span class="nav-number">3.3.2.</span> <span class="nav-text">字节码基础</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#java类型描述符"><span class="nav-number">3.3.2.1.</span> <span class="nav-text">java类型描述符</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#局部变量表"><span class="nav-number">3.3.2.2.</span> <span class="nav-text">局部变量表</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#实践一下"><span class="nav-number">3.3.3.</span> <span class="nav-text">实践一下</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#先实现我们的gradle插件"><span class="nav-number">3.3.3.1.</span> <span class="nav-text">先实现我们的gradle插件</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#ASM如何操作字节码"><span class="nav-number">3.3.3.2.</span> <span class="nav-text">ASM如何操作字节码</span></a></li></ol></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#总结一下"><span class="nav-number">4.</span> <span class="nav-text">总结一下</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#做了什么？"><span class="nav-number">4.0.1.</span> <span class="nav-text">做了什么？</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#怎么做的？"><span class="nav-number">4.0.2.</span> <span class="nav-text">怎么做的？</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#不足之处？"><span class="nav-number">4.0.3.</span> <span class="nav-text">不足之处？</span></a></li></ol></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">lvandroid</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Pisces</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+  <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+  <script src="//unpkg.com/valine/dist/Valine.min.js"></script>
+  
+  <script type="text/javascript">
+    var GUEST = ['nick','mail','link'];
+    var guest = 'nick,mail,link';
+    guest = guest.split(',').filter(item=>{
+      return GUEST.indexOf(item)>-1;
+    });
+    new Valine({
+        el: '#comments' ,
+        verify: false,
+        notify: false,
+        appId: 'iJd3Bjdd2k8x61juyQVnH7GD-gzGzoHsz',
+        appKey: 'JeW2TcXFOokN1CbgTshzdunt',
+        placeholder: 'Just go go',
+        avatar:'mm',
+        guest_info:guest,
+        pageSize:'10' || 10,
+    });
+  </script>
+
+
+
+  
+
+
+
+
+  
+  
+  
+  <link rel="stylesheet" href="/lib/algolia-instant-search/instantsearch.min.css">
+
+  
+  
+  <script src="/lib/algolia-instant-search/instantsearch.min.js"></script>
+  
+
+  <script src="/js/src/algolia-search.js?v=5.1.4"></script>
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
