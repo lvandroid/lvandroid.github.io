@@ -79,17 +79,13 @@
 
 
 
-<meta name="description" content="同步获取下载一个文件，以字符串形式打印他的头和响应体. string()方法对于小的文档来说方便且高效，但是如果响应体大于1M, 避免使用string()，因为会加载到内存中，这种情况下，将响应体以流的方式处理更好。 12345678910111213141516private final OkHttpClient client = new OkHttpClient();public void r">
-<meta property="og:type" content="article">
-<meta property="og:title" content="OKHttp文档二">
-<meta property="og:url" content="http://yoursite.com/2016/07/01/OKHttp文档二/index.html">
+<meta property="og:type" content="website">
+<meta property="og:title" content="冰色太阳的博客">
+<meta property="og:url" content="http://yoursite.com/page/2/index.html">
 <meta property="og:site_name" content="冰色太阳的博客">
-<meta property="og:description" content="同步获取下载一个文件，以字符串形式打印他的头和响应体. string()方法对于小的文档来说方便且高效，但是如果响应体大于1M, 避免使用string()，因为会加载到内存中，这种情况下，将响应体以流的方式处理更好。 12345678910111213141516private final OkHttpClient client = new OkHttpClient();public void r">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2018-04-06T05:14:15.392Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="OKHttp文档二">
-<meta name="twitter:description" content="同步获取下载一个文件，以字符串形式打印他的头和响应体. string()方法对于小的文档来说方便且高效，但是如果响应体大于1M, 避免使用string()，因为会加载到内存中，这种情况下，将响应体以流的方式处理更好。 12345678910111213141516private final OkHttpClient client = new OkHttpClient();public void r">
+<meta name="twitter:title" content="冰色太阳的博客">
 
 
 
@@ -119,13 +115,13 @@
 
 
 
-  <link rel="canonical" href="http://yoursite.com/2016/07/01/OKHttp文档二/"/>
+  <link rel="canonical" href="http://yoursite.com/page/2/"/>
 
 
 
 
 
-  <title>OKHttp文档二 | 冰色太阳的博客</title>
+  <title>冰色太阳的博客</title>
   
 
 
@@ -154,7 +150,8 @@
     
   
 
-  <div class="container sidebar-position-left page-post-detail">
+  <div class="container sidebar-position-left 
+  page-home">
     <div class="headband"></div>
 
     <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
@@ -295,9 +292,9 @@
         <div class="content-wrap">
           <div id="content" class="content">
             
-
-  <div id="posts" class="posts-expand">
+  <section id="posts" class="posts-expand">
     
+      
 
   
 
@@ -327,7 +324,9 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">OKHttp文档二</h1>
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2016/07/01/OKHttp文档二/" itemprop="url">OKHttp文档二</a></h1>
         
 
         <div class="post-meta">
@@ -387,7 +386,9 @@
       
 
       
-        <h2 id="同步获取"><a href="#同步获取" class="headerlink" title="同步获取"></a>同步获取</h2><p>下载一个文件，以字符串形式打印他的头和响应体.</p>
+        
+          
+            <h2 id="同步获取"><a href="#同步获取" class="headerlink" title="同步获取"></a>同步获取</h2><p>下载一个文件，以字符串形式打印他的头和响应体.</p>
 <p>string()方法对于小的文档来说方便且高效，但是如果响应体大于1M, 避免使用string()，因为会加载到内存中，这种情况下，将响应体以流的方式处理更好。</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">final</span> OkHttpClient client = <span class="keyword">new</span> OkHttpClient();</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> throw Exception</span>&#123;</span><br><span class="line">  Request request = <span class="keyword">new</span> Request.Builder()</span><br><span class="line">      .url(<span class="string">"http://publicobject.com/helloworld.txt"</span>)</span><br><span class="line">      .build();</span><br><span class="line"></span><br><span class="line">  Response response = client.newCall(request).execute();</span><br><span class="line">  <span class="keyword">if</span> (!response.isSuccessful()) <span class="keyword">throw</span> <span class="keyword">new</span> IOException(<span class="string">"Unexpected code "</span>+response);       </span><br><span class="line"></span><br><span class="line">  Headers responseHeaders = response.headers();</span><br><span class="line">  <span class="keyword">for</span> (<span class="keyword">int</span> i =<span class="number">0</span>;i&lt;responseHeaders.size() ;i++ ) &#123;</span><br><span class="line">    System.out.println(responseHeaders.name(i)+<span class="string">": "</span>+responseHeaders.value(i));</span><br><span class="line">  &#125;</span><br><span class="line">  System.out.println(response.body().string());</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <h2 id="异步获取"><a href="#异步获取" class="headerlink" title="异步获取"></a>异步获取</h2><p>在一个工作线程上下载一个文件,当响应可读时得到回调，在响应头准备好后回调，当阻塞时读取响应体，OkHttp目前不提供异步接收部分响应体的API</p>
@@ -430,6 +431,8 @@
 <p>上面的代码依赖于responseCount（）方法：</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">int</span> <span class="title">responseCount</span><span class="params">(Response response)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">int</span> result = <span class="number">1</span>;</span><br><span class="line">    <span class="keyword">while</span> ((response = response.priorResponse()) != <span class="keyword">null</span>) &#123;</span><br><span class="line">      result++;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> result;</span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure>
 
+          
+        
       
     </div>
     
@@ -446,28 +449,12 @@
       
 
       
-      
+
       
 
       
-        <div class="post-nav">
-          <div class="post-nav-next post-nav-item">
-            
-          </div>
-
-          <span class="post-nav-divider"></span>
-
-          <div class="post-nav-prev post-nav-item">
-            
-              <a href="/2016/07/01/Okhttp文档一/" rel="prev" title="Okhttp文档一">
-                Okhttp文档一 <i class="fa fa-chevron-right"></i>
-              </a>
-            
-          </div>
-        </div>
       
-
-      
+        <div class="post-eof"></div>
       
     </footer>
   </div>
@@ -477,11 +464,14 @@
   </article>
 
 
+    
+  </section>
 
-    <div class="post-spread">
-      
-    </div>
-  </div>
+  
+  <nav class="pagination">
+    <a class="extend prev" rel="prev" href="/"><i class="fa fa-angle-left"></i></a><a class="page-number" href="/">1</a><span class="page-number current">2</span>
+  </nav>
+
 
 
           </div>
@@ -489,13 +479,6 @@
 
 
           
-
-  
-    <div class="comments" id="comments">
-    </div>
-  
-
-
 
         </div>
         
@@ -516,17 +499,8 @@
       
 
       
-        <ul class="sidebar-nav motion-element">
-          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
-            文章目录
-          </li>
-          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
-            站点概览
-          </li>
-        </ul>
-      
 
-      <section class="site-overview-wrap sidebar-panel">
+      <section class="site-overview-wrap sidebar-panel sidebar-panel-active">
         <div class="site-overview">
           <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
             
@@ -572,22 +546,6 @@
         </div>
       </section>
 
-      
-      <!--noindex-->
-        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
-          <div class="post-toc">
-
-            
-              
-            
-
-            
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#同步获取"><span class="nav-number">1.</span> <span class="nav-text">同步获取</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#异步获取"><span class="nav-number">2.</span> <span class="nav-text">异步获取</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#访问头"><span class="nav-number">3.</span> <span class="nav-text">访问头</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Post一个字符串"><span class="nav-number">4.</span> <span class="nav-text">Post一个字符串</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Post-流"><span class="nav-number">5.</span> <span class="nav-text">Post 流</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Post-文件"><span class="nav-number">6.</span> <span class="nav-text">Post 文件</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#发布表单参数"><span class="nav-number">7.</span> <span class="nav-text">发布表单参数</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#混合请求"><span class="nav-number">8.</span> <span class="nav-text">混合请求</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#使用Gson解析响应的JSON"><span class="nav-number">9.</span> <span class="nav-text">使用Gson解析响应的JSON</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#响应缓存"><span class="nav-number">10.</span> <span class="nav-text">响应缓存</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#取消请求"><span class="nav-number">11.</span> <span class="nav-text">取消请求</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#超时"><span class="nav-number">12.</span> <span class="nav-text">超时</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#单个请求配置"><span class="nav-number">13.</span> <span class="nav-text">单个请求配置</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#认证处理"><span class="nav-number">14.</span> <span class="nav-text">认证处理</span></a></li></ol></div>
-            
-
-          </div>
-        </section>
-      <!--/noindex-->
       
 
       
@@ -728,10 +686,6 @@
 
 
   
-  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
-<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
-
-
 
   
 
