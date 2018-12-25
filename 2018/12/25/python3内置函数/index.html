@@ -87,7 +87,7 @@
 <meta property="og:site_name" content="冰色太阳的博客">
 <meta property="og:description" content="abs(x)返回参数的绝对值，参数必须是整形或者浮点型，如果是复杂类型数据，则返回参数大小 all(iterable)如果iterable所有元素都为true（或者iterable为空），则返回true，相当于： 12345def all(iterable):    for element in iterable:        if not element:           return F">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2018-12-25T06:57:11.000Z">
+<meta property="og:updated_time" content="2018-12-25T07:06:43.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="python内置函数">
 <meta name="twitter:description" content="abs(x)返回参数的绝对值，参数必须是整形或者浮点型，如果是复杂类型数据，则返回参数大小 all(iterable)如果iterable所有元素都为true（或者iterable为空），则返回true，相当于： 12345def all(iterable):    for element in iterable:        if not element:           return F">
@@ -393,6 +393,8 @@
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">all</span><span class="params">(iterable)</span>:</span></span><br><span class="line">    <span class="keyword">for</span> element <span class="keyword">in</span> iterable:</span><br><span class="line">        <span class="keyword">if</span> <span class="keyword">not</span> element:</span><br><span class="line">           <span class="keyword">return</span> <span class="keyword">False</span></span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">True</span></span><br></pre></td></tr></table></figure>
 <h3 id="any-iterable"><a href="#any-iterable" class="headerlink" title="any(iterable)"></a><code>any(iterable)</code></h3><p>如果任何一个元素是true则返回<code>True</code>，如果iterable是空则返回<code>False</code>,相当于:</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">any</span><span class="params">(iterable)</span>:</span></span><br><span class="line">    <span class="keyword">for</span> element inf iterable:</span><br><span class="line">        <span class="keyword">if</span> element:</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">True</span></span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">False</span></span><br></pre></td></tr></table></figure>
+<h3 id="ascii-object"><a href="#ascii-object" class="headerlink" title="ascii(object)"></a><code>ascii(object)</code></h3><p>返回ascii</p>
+<h3 id="bin-x"><a href="#bin-x" class="headerlink" title="bin(x)"></a><code>bin(x)</code></h3><p>将integer类型的数字转换成<code>&quot;0b&quot;</code>前缀的二进制字符串，结果是有效的python表达式，如果x不是integer类型，则必须定义一个返回值为integer的函数<code>__index__()</code></p>
 
       
     </div>
@@ -559,7 +561,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#abs-x"><span class="nav-number">1.</span> <span class="nav-text">abs(x)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#all-iterable"><span class="nav-number">2.</span> <span class="nav-text">all(iterable)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#any-iterable"><span class="nav-number">3.</span> <span class="nav-text">any(iterable)</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#abs-x"><span class="nav-number">1.</span> <span class="nav-text">abs(x)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#all-iterable"><span class="nav-number">2.</span> <span class="nav-text">all(iterable)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#any-iterable"><span class="nav-number">3.</span> <span class="nav-text">any(iterable)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#ascii-object"><span class="nav-number">4.</span> <span class="nav-text">ascii(object)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#bin-x"><span class="nav-number">5.</span> <span class="nav-text">bin(x)</span></a></li></ol></div>
             
 
           </div>
